@@ -150,3 +150,7 @@ INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (5, 'A', 2,
 INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (6, 'B', 2, 0, 0);
 INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (7, 'C', 2, 0, 0);
 INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (8, 'D', 2, 0, 0);
+INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (9, 'A', 3, 0, 0);
+INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (10, 'B', 3, 0, 0);
+INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (11, 'C', 3, 0, 0);
+INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (12, 'D', 3, 0, 0);
