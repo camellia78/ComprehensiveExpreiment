@@ -1,17 +1,17 @@
 services:
   # ========== openGauss ==========
-  opengauss:
-    image: opengauss/opengauss:5.0.0
-    container_name: dorm-opengauss
+  database:
+    image: postgres:15
+    container_name: dorm-db
     ports:
       - "15432:5432"
     environment:
-      GS_PASSWORD: Enmo@123
-      GS_USERNAME: gaussdb
-      GS_DB: dormitory
+      POSTGRES_PASSWORD: Enmo@123
+      POSTGRES_USER: gaussdb
+      POSTGRES_DB: dormitory
     volumes:
       - ./dorm-server/src/main/resources/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - opengauss-data:/var/lib/opengauss
+      - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "su", "-", "omm", "-c", "gsql -U gaussdb -d dormitory -c 'SELECT 1'"]
@@ -26,13 +26,13 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://opengauss:5432/dormitory
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/dormitory
       SPRING_DATASOURCE_USERNAME: gaussdb
       SPRING_DATASOURCE_PASSWORD: Enmo@123
       JWT_SECRET: dormitory-system-secret-key-2026
       JWT_EXPIRATION: 7200000
     depends_on:
-      opengauss:
+      database:
         condition: service_healthy
     restart: unless-stopped
 
@@ -47,4 +47,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  opengauss-data:
+  pgdata:
