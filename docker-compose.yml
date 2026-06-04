@@ -1,5 +1,5 @@
-﻿version: "3.8"
 services:
+  # ========== openGauss ==========
   opengauss:
     image: opengauss/opengauss:5.0.0
     container_name: dorm-opengauss
@@ -12,6 +12,38 @@ services:
     volumes:
       - ./dorm-server/src/main/resources/init.sql:/docker-entrypoint-initdb.d/init.sql
       - opengauss-data:/var/lib/opengauss
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "su", "-", "omm", "-c", "gsql -U gaussdb -d dormitory -c 'SELECT 1'"]
+      interval: 10s
+      retries: 10
+      start_period: 30s
+
+  # ========== Spring Boot Backend ==========
+  backend:
+    build: ./dorm-server
+    container_name: dorm-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://opengauss:5432/dormitory
+      SPRING_DATASOURCE_USERNAME: gaussdb
+      SPRING_DATASOURCE_PASSWORD: Enmo@123
+      JWT_SECRET: dormitory-system-secret-key-2026
+      JWT_EXPIRATION: 7200000
+    depends_on:
+      opengauss:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ========== Vue Frontend ==========
+  frontend:
+    build: ./dorm-web
+    container_name: dorm-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
     restart: unless-stopped
 
 volumes:
