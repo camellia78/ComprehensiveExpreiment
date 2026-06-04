@@ -1,0 +1,24 @@
+﻿server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: org.opengauss.Driver
+    url: jdbc:opengauss://localhost:15432/dormitory
+    username: gaussdb
+    password: Enmo@123
+
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: assign_id
+      logic-delete-field: isDeleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+jwt:
+  secret: dormitory-system-secret-key-2026
+  expiration: 7200000
