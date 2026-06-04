@@ -1,0 +1,18 @@
+﻿version: "3.8"
+services:
+  opengauss:
+    image: opengauss/opengauss:5.0.0
+    container_name: dorm-opengauss
+    ports:
+      - "15432:5432"
+    environment:
+      GS_PASSWORD: Enmo@123
+      GS_USERNAME: gaussdb
+      GS_DB: dormitory
+    volumes:
+      - ./dorm-server/src/main/resources/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - opengauss-data:/var/lib/opengauss
+    restart: unless-stopped
+
+volumes:
+  opengauss-data:
