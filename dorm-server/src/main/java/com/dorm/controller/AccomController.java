@@ -1,4 +1,4 @@
-﻿package com.dorm.controller;
+package com.dorm.controller;
 
 import com.dorm.common.R;
 import com.dorm.dto.CheckinDTO;

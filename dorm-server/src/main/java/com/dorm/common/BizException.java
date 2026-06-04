@@ -1,4 +1,4 @@
-﻿package com.dorm.common;
+package com.dorm.common;
 
 import lombok.Getter;
 

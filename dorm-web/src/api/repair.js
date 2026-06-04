@@ -1,4 +1,4 @@
-﻿import request from './request'
+import request from './request'
 export const submitRepair = (data) => request.post('/repairs', data)
 export const getMyRepairs = (params) => request.get('/repairs', { params })
 export const getAllRepairs = (params) => request.get('/repairs/all', { params })

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div>
     <div class="toolbar">
       <el-select v-model="query.buildingId" placeholder="选择楼栋" clearable style="width:200px;margin-right:12px" @change="fetchList">

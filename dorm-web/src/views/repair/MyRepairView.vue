@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div>
     <div class="toolbar"><el-button type="primary" @click="showDialog()">提交报修</el-button></div>
     <el-table :data="list.records" border stripe v-loading="loading">

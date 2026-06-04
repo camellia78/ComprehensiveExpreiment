@@ -1,4 +1,4 @@
-﻿import request from './request'
+import request from './request'
 export const getBuildings = () => request.get('/buildings')
 export const addBuilding = (data) => request.post('/buildings', data)
 export const updateBuilding = (id, data) => request.put('/buildings/' + id, data)

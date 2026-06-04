@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div>
     <div class="toolbar"><h4>调宿处理</h4></div>
     <el-form :model="form" ref="formRef" label-width="100px" style="max-width:600px">

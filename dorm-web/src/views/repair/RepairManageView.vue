@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div>
     <div class="toolbar">
       <el-select v-model="query.status" placeholder="状态筛选" clearable style="width:160px;margin-right:12px" @change="fetchList">

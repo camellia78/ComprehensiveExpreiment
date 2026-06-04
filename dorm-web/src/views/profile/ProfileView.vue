@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div style="max-width:500px">
     <h4>个人中心</h4>
     <el-descriptions :column="1" border style="margin-top:16px">

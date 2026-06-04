@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <el-container style="height:100vh">
     <el-aside width="220px" style="background:#304156">
       <div class="logo">宿舍管理系统</div>

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div>
     <div class="toolbar"><el-button type="primary" @click="showDialog()">新增楼栋</el-button></div>
     <el-table :data="list" border stripe v-loading="loading">

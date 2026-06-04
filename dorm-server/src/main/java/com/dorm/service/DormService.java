@@ -1,4 +1,4 @@
-﻿package com.dorm.service;
+package com.dorm.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;

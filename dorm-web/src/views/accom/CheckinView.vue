@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div>
     <div class="toolbar"><h4>入住登记</h4></div>
     <el-form :model="form" :rules="rules" ref="formRef" label-width="100px" style="max-width:600px">

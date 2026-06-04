@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div>
     <div class="toolbar"><h4>用户管理</h4></div>
     <el-table :data="list.records" border stripe v-loading="loading">

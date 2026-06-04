@@ -1,4 +1,4 @@
-﻿package com.dorm.config;
+package com.dorm.config;
 
 import com.dorm.interceptor.AuthInterceptor;
 import lombok.RequiredArgsConstructor;

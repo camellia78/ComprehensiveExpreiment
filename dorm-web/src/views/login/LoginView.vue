@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="login-container">
     <div class="login-card">
       <h2>学生宿舍管理系统</h2>

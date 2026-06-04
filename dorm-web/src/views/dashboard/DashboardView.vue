@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div>
     <h3>欢迎使用学生宿舍管理系统</h3>
     <el-row :gutter="20" style="margin-top:20px">

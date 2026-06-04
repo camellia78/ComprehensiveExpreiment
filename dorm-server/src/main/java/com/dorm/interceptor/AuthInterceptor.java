@@ -1,4 +1,4 @@
-﻿package com.dorm.interceptor;
+package com.dorm.interceptor;
 
 import com.dorm.common.JwtUtils;
 import io.jsonwebtoken.Claims;
