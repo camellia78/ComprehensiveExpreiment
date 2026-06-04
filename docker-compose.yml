@@ -1,5 +1,5 @@
-services:
-  # ========== openGauss ==========
+﻿services:
+  # ========== PostgreSQL ==========
   database:
     image: postgres:15
     container_name: dorm-db
@@ -14,14 +14,16 @@ services:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "su", "-", "omm", "-c", "gsql -U gaussdb -d dormitory -c 'SELECT 1'"]
+      test: ["CMD", "pg_isready", "-U", "gaussdb", "-d", "dormitory"]
       interval: 10s
       retries: 10
       start_period: 30s
 
   # ========== Spring Boot Backend ==========
   backend:
-    build: ./dorm-server
+    build:
+      context: .
+      dockerfile: ./dorm-server/Dockerfile
     container_name: dorm-backend
     ports:
       - "8080:8080"
@@ -38,7 +40,9 @@ services:
 
   # ========== Vue Frontend ==========
   frontend:
-    build: ./dorm-web
+    build:
+      context: .
+      dockerfile: ./dorm-web/Dockerfile
     container_name: dorm-frontend
     ports:
       - "80:80"
