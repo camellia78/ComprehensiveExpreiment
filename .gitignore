@@ -1,0 +1,31 @@
+﻿# Maven
+target/
+
+# Node
+node_modules/
+*.log
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+data/
+*.db
+
+# Logs
+startup.log*
+app.log*
+h2_cookies.txt
+h2jar.txt
+
+# Temp files
+BCryptGen.java
+BCryptGen.class
+Tmp.java
+Tmp.class

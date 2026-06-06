@@ -1,0 +1,51 @@
+services:
+  database:
+    image: postgres:15
+    container_name: dorm-db
+    ports:
+      - "15432:5432"
+    environment:
+      POSTGRES_PASSWORD: Enmo@123
+      POSTGRES_USER: gaussdb
+      POSTGRES_DB: dormitory
+    volumes:
+      - ./dorm-server/src/main/resources/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "gaussdb", "-d", "dormitory"]
+      interval: 10s
+      retries: 10
+      start_period: 30s
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./dorm-server/Dockerfile
+    container_name: dorm-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/dormitory
+      SPRING_DATASOURCE_USERNAME: gaussdb
+      SPRING_DATASOURCE_PASSWORD: Enmo@123
+      JWT_SECRET: dormitory-system-secret-key-2026
+      JWT_EXPIRATION: 7200000
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ./dorm-web/Dockerfile
+    container_name: dorm-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  pgdata:

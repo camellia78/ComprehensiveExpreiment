@@ -1,0 +1,106 @@
+package com.dorm.controller;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dorm.annotation.RequireRole;
+import com.dorm.common.BizException;
+import com.dorm.common.R;
+import com.dorm.config.SecurityConfig.PasswordEncoder;
+import com.dorm.dto.CreateUserDTO;
+import com.dorm.dto.ResetPasswordDTO;
+import com.dorm.dto.UpdateUserDTO;
+import com.dorm.entity.SysUser;
+import com.dorm.mapper.SysUserMapper;
+import com.dorm.service.AuthService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+@RestController
+@RequestMapping("/api")
+@RequiredArgsConstructor
+public class UserController {
+    private final SysUserMapper userMapper;
+    private final AuthService authService;
+    private final PasswordEncoder passwordEncoder;
+
+    @GetMapping("/profile")
+    public R<SysUser> profile(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        SysUser user = userMapper.selectById(userId);
+        user.setPassword(null);
+        return R.ok(user);
+    }
+
+    @GetMapping("/users")
+    @RequireRole(0)
+    public R<Page<SysUser>> listUsers(@RequestParam(defaultValue = "1") int page,
+                                      @RequestParam(defaultValue = "10") int size,
+                                      @RequestParam(required = false) String keyword) {
+        LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
+        if (keyword != null && !keyword.isEmpty()) {
+            wrapper.and(w -> w.like(SysUser::getUsername, keyword)
+                    .or().like(SysUser::getRealName, keyword)
+                    .or().like(SysUser::getStudentNo, keyword));
+        }
+        wrapper.orderByAsc(SysUser::getRole).orderByAsc(SysUser::getCreateTime);
+        Page<SysUser> result = userMapper.selectPage(new Page<>(page, size), wrapper);
+        result.getRecords().forEach(u -> u.setPassword(null));
+        return R.ok(result);
+    }
+
+    @PostMapping("/users")
+    @RequireRole(0)
+    public R<?> createUser(@Valid @RequestBody CreateUserDTO dto) {
+        SysUser exist = userMapper.selectOne(
+                new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, dto.getUsername()));
+        if (exist != null) throw new BizException("用户名已存在");
+        SysUser user = new SysUser();
+        user.setUsername(dto.getUsername());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setRealName(dto.getRealName());
+        user.setRole(dto.getRole());
+        user.setStudentNo(dto.getStudentNo());
+        user.setPhone(dto.getPhone());
+        user.setGender(dto.getGender() != null ? dto.getGender() : 0);
+        userMapper.insert(user);
+        return R.ok(null);
+    }
+
+    @PutMapping("/users/{id}")
+    @RequireRole(0)
+    public R<?> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserDTO dto) {
+        SysUser user = userMapper.selectById(id);
+        if (user == null) throw new BizException("用户不存在");
+        if (dto.getRealName() != null) user.setRealName(dto.getRealName());
+        if (dto.getStudentNo() != null) user.setStudentNo(dto.getStudentNo());
+        if (dto.getPhone() != null) user.setPhone(dto.getPhone());
+        if (dto.getGender() != null) user.setGender(dto.getGender());
+        if (dto.getRole() != null) user.setRole(dto.getRole());
+        userMapper.updateById(user);
+        return R.ok(null);
+    }
+
+    @DeleteMapping("/users/{id}")
+    @RequireRole(0)
+    public R<?> deleteUser(@PathVariable Long id) {
+        SysUser user = userMapper.selectById(id);
+        if (user == null) throw new BizException("用户不存在");
+        if (user.getRole() == 0) {
+            long adminCount = userMapper.selectCount(
+                    new LambdaQueryWrapper<SysUser>().eq(SysUser::getRole, 0));
+            if (adminCount <= 1) throw new BizException("至少保留一个管理员账号");
+        }
+        userMapper.deleteById(id);
+        return R.ok(null);
+    }
+
+    @PutMapping("/users/{id}/reset-password")
+    @RequireRole(0)
+    public R<?> resetPassword(@PathVariable Long id, @Valid @RequestBody ResetPasswordDTO dto) {
+        authService.resetPassword(id, dto.getNewPassword());
+        return R.ok(null);
+    }
+}
