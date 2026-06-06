@@ -3,10 +3,16 @@
     <div class="toolbar"><h4>退宿登记</h4></div>
     <el-form :model="form" ref="formRef" label-width="100px" style="max-width:600px">
       <el-form-item label="选择学生">
-        <el-select v-model="form.studentId" filterable @change="onStudentChange"><el-option v-for="c in checkins" :key="c.studentId" :label="getStudentName(c.studentId)" :value="c.studentId" /></el-select>
+        <el-select v-model="form.studentId" filterable @change="onStudentChange" style="width:100%">
+          <el-option v-for="c in checkins" :key="c.studentId" :label="c.studentName + ' - ' + c.buildingName + ' ' + c.roomNo + ' 床位' + c.bedNo" :value="c.studentId" />
+        </el-select>
       </el-form-item>
-      <el-form-item label="当前信息"><el-input :value="currentInfo" disabled /></el-form-item>
-      <el-form-item label="退宿原因"><el-input v-model="form.reason" type="textarea" /></el-form-item>
+      <el-form-item label="当前位置">
+        <el-input :value="currentPos" disabled />
+      </el-form-item>
+      <el-form-item label="退宿原因">
+        <el-input v-model="form.reason" type="textarea" :rows="2" />
+      </el-form-item>
       <el-form-item><el-button type="danger" @click="handleSubmit">确认退宿</el-button></el-form-item>
     </el-form>
   </div>
@@ -14,35 +20,30 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { getBuildings, getRooms } from '../../api/dorm'
-import { getUsers, getCheckins, doCheckout } from '../../api/accom'
+import { getCheckins, doCheckout } from '../../api/accom'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
-const buildings = ref([]); const students = ref([]); const checkins = ref([]); const rooms = ref([])
+const checkins = ref([])
 const form = reactive({ studentId: null, reason: '' })
-const currentInfo = ref('')
-
-const getStudentName = (id) => { const s = students.value.find(i => i.id === id); return s && s.realName }
-const getBuildingName = (id) => { const b = buildings.value.find(i => i.id === id); return b && b.name }
-const getRoomNo = (id) => { const r = rooms.value.find(i => i.id === id); return r && r.roomNo }
+const currentPos = ref('')
 
 const fetchData = async () => {
-  buildings.value = await getBuildings()
-  const userPage = await getUsers({ page: 1, size: 100 }); students.value = userPage.records
-  checkins.value = await getCheckins()
-  const roomPage = await getRooms({ page: 1, size: 200 }); rooms.value = roomPage.records
+  const res = await getCheckins({ page: 1, size: 100, status: 1 })
+  checkins.value = res.records || []
 }
 
 const onStudentChange = () => {
   const c = checkins.value.find(i => i.studentId === form.studentId)
-  if (c) currentInfo.value = getBuildingName(c.buildingId) + ' ' + getRoomNo(c.roomId) + ' 床位' + c.bedId
-  else currentInfo.value = ''
+  currentPos.value = c ? c.buildingName + ' ' + c.roomNo + ' 床位' + c.bedNo : ''
 }
 
 const handleSubmit = async () => {
   if (!form.studentId) { ElMessage.warning('请选择学生'); return }
   await ElMessageBox.confirm('确定退宿？', '确认', { type: 'warning' })
-  await doCheckout(form); ElMessage.success('退宿成功'); fetchData()
+  await doCheckout({ studentId: form.studentId, reason: form.reason })
+  ElMessage.success('退宿成功')
+  form.studentId = null; form.reason = ''; currentPos.value = ''
+  fetchData()
 }
 
 onMounted(fetchData)
