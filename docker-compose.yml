@@ -1,10 +1,9 @@
 services:
-  # ========== PostgreSQL 15 ==========
   database:
     image: postgres:15
     container_name: dorm-db
     ports:
-      - "5432:5432"
+      - "15432:5432"
     environment:
       POSTGRES_PASSWORD: Enmo@123
       POSTGRES_USER: gaussdb
@@ -14,14 +13,15 @@ services:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U gaussdb -d dormitory"]
+      test: ["CMD", "pg_isready", "-U", "gaussdb", "-d", "dormitory"]
       interval: 10s
       retries: 10
       start_period: 30s
 
-  # ========== Spring Boot 后端 ==========
   backend:
-    build: ./dorm-server
+    build:
+      context: .
+      dockerfile: ./dorm-server/Dockerfile
     container_name: dorm-backend
     ports:
       - "8080:8080"
@@ -36,9 +36,10 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  # ========== Vue 前端 ==========
   frontend:
-    build: ./dorm-web
+    build:
+      context: .
+      dockerfile: ./dorm-web/Dockerfile
     container_name: dorm-frontend
     ports:
       - "80:80"
