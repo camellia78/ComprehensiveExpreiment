@@ -1,4 +1,4 @@
-﻿package com.dorm.common;
+package com.dorm.common;
 
 import lombok.Getter;
 
@@ -16,4 +16,3 @@ public class BizException extends RuntimeException {
         this.code = code;
     }
 }
-

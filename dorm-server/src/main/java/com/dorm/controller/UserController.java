@@ -35,7 +35,7 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    @RequireRole(0)
+    @RequireRole({0, 2})
     public R<Page<SysUser>> listUsers(@RequestParam(defaultValue = "1") int page,
                                       @RequestParam(defaultValue = "10") int size,
                                       @RequestParam(required = false) String keyword,
@@ -55,8 +55,12 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    @RequireRole(0)
-    public R<?> createUser(@Valid @RequestBody CreateUserDTO dto) {
+    @RequireRole({0, 2})
+    public R<?> createUser(@Valid @RequestBody CreateUserDTO dto, HttpServletRequest request) {
+        Integer operatorRole = (Integer) request.getAttribute("role");
+        if (operatorRole == 2 && dto.getRole() != 1) {
+            throw new BizException("二级管理员只能创建学生账号");
+        }
         SysUser exist = userMapper.selectOne(
                 new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, dto.getUsername()));
         if (exist != null) throw new BizException("用户名已存在");
@@ -78,10 +82,15 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
-    @RequireRole(0)
-    public R<?> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserDTO dto) {
+    @RequireRole({0, 2})
+    public R<?> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserDTO dto,
+                           HttpServletRequest request) {
         SysUser user = userMapper.selectById(id);
         if (user == null) throw new BizException("用户不存在");
+        Integer operatorRole = (Integer) request.getAttribute("role");
+        if (operatorRole == 2 && user.getRole() != 1) {
+            throw new BizException("二级管理员只能编辑学生信息");
+        }
         if (dto.getStudentNo() != null && !dto.getStudentNo().isEmpty()
                 && !dto.getStudentNo().equals(user.getStudentNo())) {
             SysUser existNo = userMapper.selectOne(
@@ -92,7 +101,12 @@ public class UserController {
         if (dto.getStudentNo() != null) user.setStudentNo(dto.getStudentNo());
         if (dto.getPhone() != null) user.setPhone(dto.getPhone());
         if (dto.getGender() != null) user.setGender(dto.getGender());
-        if (dto.getRole() != null) user.setRole(dto.getRole());
+        if (dto.getRole() != null) {
+            if (operatorRole == 2 && dto.getRole() != 1) {
+                throw new BizException("二级管理员不能修改用户角色为管理员");
+            }
+            user.setRole(dto.getRole());
+        }
         userMapper.updateById(user);
         return R.ok(null);
     }
@@ -103,17 +117,24 @@ public class UserController {
         SysUser user = userMapper.selectById(id);
         if (user == null) throw new BizException("用户不存在");
         if (user.getRole() == 0) {
-            long adminCount = userMapper.selectCount(
+            long superCount = userMapper.selectCount(
                     new LambdaQueryWrapper<SysUser>().eq(SysUser::getRole, 0));
-            if (adminCount <= 1) throw new BizException("至少保留一个管理员账号");
+            if (superCount <= 1) throw new BizException("至少保留一个总管理员账号");
         }
         userMapper.deleteById(id);
         return R.ok(null);
     }
 
     @PutMapping("/users/{id}/reset-password")
-    @RequireRole(0)
-    public R<?> resetPassword(@PathVariable Long id, @Valid @RequestBody ResetPasswordDTO dto) {
+    @RequireRole({0, 2})
+    public R<?> resetPassword(@PathVariable Long id, @Valid @RequestBody ResetPasswordDTO dto,
+                              HttpServletRequest request) {
+        SysUser user = userMapper.selectById(id);
+        if (user == null) throw new BizException("用户不存在");
+        Integer operatorRole = (Integer) request.getAttribute("role");
+        if (operatorRole == 2 && user.getRole() != 1) {
+            throw new BizException("二级管理员只能重置学生密码");
+        }
         authService.resetPassword(id, dto.getNewPassword());
         return R.ok(null);
     }
