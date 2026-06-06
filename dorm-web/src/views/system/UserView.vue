@@ -149,7 +149,7 @@ import { Search, Male, Female } from '@element-plus/icons-vue'
 const list = ref({ records: [], total: 0 })
 const loading = ref(false)
 const page = ref(1)
-const size = ref(10)
+const size = ref(20)
 const keyword = ref('')
 const activeTab = ref('admin')
 const currentRole = ref(parseInt(localStorage.getItem('role') || '0'))
@@ -157,19 +157,19 @@ const hasSuperAdmin = ref(false)
 
 const fetchList = async () => {
   loading.value = true
-  const params = { page: page.value, size: 100 }
+  const params = { page: page.value, size: size.value }
   if (keyword.value) params.keyword = keyword.value
   try {
     const res = await getUsers(params)
     if (activeTab.value === 'admin') {
-      list.value.records = (res.records || []).filter(u => u.role === 0 || u.role === 2)
-      hasSuperAdmin.value = list.value.records.some(u => u.role === 0)
+      const admins = (res.records || []).filter(u => u.role === 0 || u.role === 2)
+      list.value = { records: admins, total: admins.length }
+      hasSuperAdmin.value = admins.some(u => u.role === 0)
     } else {
       params.role = 1
       const studentRes = await getUsers(params)
-      list.value = studentRes
+      list.value = { records: studentRes.records || [], total: Number(studentRes.total) || 0 }
     }
-    list.value.total = list.value.records.length
   } catch (_) {}
   loading.value = false
 }
