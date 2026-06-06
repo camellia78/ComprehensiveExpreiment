@@ -13,6 +13,8 @@ public class RepairRequest {
     private Long buildingId;
     private Long roomId;
     private String description;
+    private String repairType;
+    private Integer urgency;
     private Integer status;
     @TableLogic
     private Integer isDeleted;
