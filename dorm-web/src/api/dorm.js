@@ -1,0 +1,11 @@
+import request from './request'
+export const getBuildings = () => request.get('/buildings')
+export const addBuilding = (data) => request.post('/buildings', data)
+export const updateBuilding = (id, data) => request.put('/buildings/' + id, data)
+export const deleteBuilding = (id) => request.delete('/buildings/' + id)
+export const getRooms = (params) => request.get('/rooms', { params })
+export const addRoom = (data) => request.post('/rooms', data)
+export const updateRoom = (id, data) => request.put('/rooms/' + id, data)
+export const deleteRoom = (id) => request.delete('/rooms/' + id)
+export const getRoomBeds = (roomId) => request.get('/rooms/' + roomId + '/beds')
+export const getFreeBeds = (buildingId) => request.get('/buildings/' + buildingId + '/free-beds')
