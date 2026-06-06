@@ -61,6 +61,11 @@ public class UserController {
         if (operatorRole == 2 && dto.getRole() != 1) {
             throw new BizException("二级管理员只能创建学生账号");
         }
+        if (dto.getRole() == 0) {
+            long superCount = userMapper.selectCount(
+                    new LambdaQueryWrapper<SysUser>().eq(SysUser::getRole, 0));
+            if (superCount >= 1) throw new BizException("总管理员已存在，系统仅允许一个总管理员");
+        }
         SysUser exist = userMapper.selectOne(
                 new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, dto.getUsername()));
         if (exist != null) throw new BizException("用户名已存在");
@@ -102,8 +107,11 @@ public class UserController {
         if (dto.getPhone() != null) user.setPhone(dto.getPhone());
         if (dto.getGender() != null) user.setGender(dto.getGender());
         if (dto.getRole() != null) {
-            if (operatorRole == 2 && dto.getRole() != 1) {
-                throw new BizException("二级管理员不能修改用户角色为管理员");
+            if (operatorRole == 2) throw new BizException("二级管理员不能修改用户角色");
+            if (dto.getRole() == 0 && user.getRole() != 0) {
+                long superCount = userMapper.selectCount(
+                        new LambdaQueryWrapper<SysUser>().eq(SysUser::getRole, 0));
+                if (superCount >= 1) throw new BizException("总管理员已存在，不能将其他用户提升为总管理员");
             }
             user.setRole(dto.getRole());
         }
@@ -116,11 +124,7 @@ public class UserController {
     public R<?> deleteUser(@PathVariable Long id) {
         SysUser user = userMapper.selectById(id);
         if (user == null) throw new BizException("用户不存在");
-        if (user.getRole() == 0) {
-            long superCount = userMapper.selectCount(
-                    new LambdaQueryWrapper<SysUser>().eq(SysUser::getRole, 0));
-            if (superCount <= 1) throw new BizException("至少保留一个总管理员账号");
-        }
+        if (user.getRole() == 0) throw new BizException("不能删除总管理员账号");
         userMapper.deleteById(id);
         return R.ok(null);
     }

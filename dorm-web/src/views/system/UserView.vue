@@ -33,7 +33,7 @@
             <template #default="{ row }">
               <el-button v-if="currentRole === 0 || row.role !== 0" size="small" @click="showEdit(row)">编辑</el-button>
               <el-button v-if="currentRole === 0 || row.role !== 0" size="small" type="warning" @click="showResetPwd(row)">重置密码</el-button>
-              <el-popconfirm v-if="currentRole === 0" title="确定删除该用户吗？" @confirm="handleDelete(row.id)">
+              <el-popconfirm v-if="currentRole === 0 && row.role !== 0" title="确定删除该用户吗？" @confirm="handleDelete(row.id)">
                 <template #reference>
                   <el-button size="small" type="danger">删除</el-button>
                 </template>
@@ -94,7 +94,7 @@
         </el-form-item>
         <el-form-item label="角色" prop="role">
           <el-select v-model="form.role" style="width:100%" :disabled="isEdit && currentRole === 2">
-            <el-option v-if="currentRole === 0" :value="0" label="总管理员" />
+            <el-option v-if="currentRole === 0 && !hasSuperAdmin" :value="0" label="总管理员" />
             <el-option v-if="currentRole === 0" :value="2" label="二级管理员" />
             <el-option :value="1" label="学生" />
           </el-select>
@@ -147,26 +147,23 @@ const size = ref(10)
 const keyword = ref('')
 const activeTab = ref('admin')
 const currentRole = ref(parseInt(localStorage.getItem('role') || '0'))
+const hasSuperAdmin = ref(false)
 
 const fetchList = async () => {
   loading.value = true
-  const params = { page: page.value, size: size.value }
+  const params = { page: page.value, size: 100 }
   if (keyword.value) params.keyword = keyword.value
-  if (activeTab.value === 'admin') {
-    params.role = null
-    // 查询管理员（前端过滤 role 0 和 2）
-  } else {
-    params.role = 1
-  }
   try {
-    // 管理员tab查询所有非学生，后端不支持!=1，改为无role过滤时前端过滤
+    const res = await getUsers(params)
     if (activeTab.value === 'admin') {
-      const res = await getUsers({ page: page.value, size: 100, keyword: keyword.value })
-      list.value = { records: (res.records || []).filter(u => u.role === 0 || u.role === 2), total: 0 }
-      list.value.total = list.value.records.length
+      list.value.records = (res.records || []).filter(u => u.role === 0 || u.role === 2)
+      hasSuperAdmin.value = list.value.records.some(u => u.role === 0)
     } else {
-      list.value = await getUsers(params)
+      params.role = 1
+      const studentRes = await getUsers(params)
+      list.value = studentRes
     }
+    list.value.total = list.value.records.length
   } catch (_) {}
   loading.value = false
 }
