@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="login-container">
     <div class="login-card">
       <h2>学生宿舍管理系统</h2>
@@ -13,7 +13,6 @@
           <el-button type="primary" :loading="loading" style="width:100%" @click="handleLogin">登 录</el-button>
         </el-form-item>
       </el-form>
-      <p class="hint">管理员: admin / 123456<br/>学生: zhangsan / 123456</p>
     </div>
   </div>
 </template>
@@ -55,5 +54,4 @@ const handleLogin = async () => {
 .login-container { height: 100vh; display: flex; align-items: center; justify-content: center; background: #f0f2f5; }
 .login-card { width: 400px; padding: 40px; background: #fff; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
 .login-card h2 { text-align: center; margin-bottom: 30px; color: #303133; }
-.hint { text-align: center; color: #909399; font-size: 12px; line-height: 1.8; }
 </style>
