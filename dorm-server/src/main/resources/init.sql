@@ -1,4 +1,4 @@
--- ========================================
+﻿-- ========================================
 -- openGauss
 -- ========================================
 
@@ -37,6 +37,8 @@ CREATE TABLE dorm_room (
     total_beds INT DEFAULT 4,
     occupied_beds INT DEFAULT 0,
     status INT DEFAULT 0,
+    repair_type VARCHAR(20) DEFAULT '其他',
+    urgency INT DEFAULT 0,
     is_deleted INT DEFAULT 0,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -49,6 +51,8 @@ CREATE TABLE dorm_bed (
     bed_no VARCHAR(10) NOT NULL,
     room_id BIGINT NOT NULL REFERENCES dorm_room(id),
     status INT DEFAULT 0,
+    repair_type VARCHAR(20) DEFAULT '其他',
+    urgency INT DEFAULT 0,
     is_deleted INT DEFAULT 0,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -103,6 +107,8 @@ CREATE TABLE repair_request (
     room_id BIGINT,
     description VARCHAR(1000) NOT NULL,
     status INT DEFAULT 0,
+    repair_type VARCHAR(20) DEFAULT '其他',
+    urgency INT DEFAULT 0,
     is_deleted INT DEFAULT 0,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
