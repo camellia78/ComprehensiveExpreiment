@@ -24,4 +24,10 @@ public class SysUser {
     private LocalDateTime createTime;
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
+    @TableField(exist = false)
+    private String buildingName;
+    @TableField(exist = false)
+    private String roomNo;
+    @TableField(exist = false)
+    private String bedNo;
 }

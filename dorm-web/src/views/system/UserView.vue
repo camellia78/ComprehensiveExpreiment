@@ -55,6 +55,12 @@
               <el-icon v-else color="#f56c6c"><Female /></el-icon>
             </template>
           </el-table-column>
+          <el-table-column label="所在宿舍" width="160">
+            <template #default="{ row }">
+              <span v-if="row.buildingName">{{ row.buildingName }} {{ row.roomNo }}室 {{ row.bedNo }}床</span>
+              <el-tag v-else type="info" size="small">未入住</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column label="状态" width="80" align="center">
             <template #default="{ row }">
               <el-tag v-if="row.lockUntil && new Date(row.lockUntil) > new Date()" type="danger" size="small">锁定</el-tag>

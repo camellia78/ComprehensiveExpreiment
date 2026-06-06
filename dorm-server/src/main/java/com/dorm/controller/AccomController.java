@@ -11,6 +11,7 @@ import com.dorm.entity.AccomTransfer;
 import com.dorm.service.AccomService;
 import com.dorm.vo.CheckinVO;
 import lombok.RequiredArgsConstructor;
+import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -40,5 +41,9 @@ public class AccomController {
     @PostMapping("/checkouts")
     public R<AccomCheckout> checkout(@RequestBody CheckoutDTO dto) {
         return R.ok(accomService.checkout(dto));
+    }
+    @GetMapping("/rooms/{roomId}/students")
+    public R<List<CheckinVO>> getRoomStudents(@PathVariable Long roomId) {
+        return R.ok(accomService.listStudentsByRoomId(roomId));
     }
 }

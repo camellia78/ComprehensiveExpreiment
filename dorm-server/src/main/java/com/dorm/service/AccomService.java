@@ -138,4 +138,39 @@ public class AccomService {
         voPage.setRecords(voList);
         return voPage;
     }
+    public List<CheckinVO> listStudentsByRoomId(Long roomId) {
+        List<AccomCheckin> checkins = checkinMapper.selectList(
+                new LambdaQueryWrapper<AccomCheckin>()
+                        .eq(AccomCheckin::getRoomId, roomId)
+                        .eq(AccomCheckin::getStatus, 1));
+        if (checkins.isEmpty()) return java.util.Collections.emptyList();
+        Set<Long> studentIds = checkins.stream().map(AccomCheckin::getStudentId).collect(Collectors.toSet());
+        Set<Long> bedIds = checkins.stream().map(AccomCheckin::getBedId).collect(Collectors.toSet());
+        Set<Long> roomIds = checkins.stream().map(AccomCheckin::getRoomId).collect(Collectors.toSet());
+        Set<Long> buildingIds = checkins.stream().map(AccomCheckin::getBuildingId).collect(Collectors.toSet());
+        Map<Long, SysUser> userMap = userMapper.selectBatchIds(studentIds).stream()
+                .collect(Collectors.toMap(SysUser::getId, u -> u, (a, b) -> a));
+        Map<Long, String> bedMap = bedMapper.selectBatchIds(bedIds).stream()
+                .collect(Collectors.toMap(DormBed::getId, DormBed::getBedNo, (a, b) -> a));
+        Map<Long, String> roomMap = roomMapper.selectBatchIds(roomIds).stream()
+                .collect(Collectors.toMap(DormRoom::getId, DormRoom::getRoomNo, (a, b) -> a));
+        Map<Long, String> buildingMap = buildingMapper.selectBatchIds(buildingIds).stream()
+                .collect(Collectors.toMap(DormBuilding::getId, DormBuilding::getName, (a, b) -> a));
+        return checkins.stream().map(c -> {
+            CheckinVO vo = new CheckinVO();
+            vo.setId(c.getId());
+            vo.setStudentId(c.getStudentId());
+            vo.setBedId(c.getBedId());
+            vo.setRoomId(c.getRoomId());
+            vo.setBuildingId(c.getBuildingId());
+            vo.setCheckinTime(c.getCheckinTime());
+            vo.setStatus(c.getStatus());
+            SysUser u = userMap.get(c.getStudentId());
+            if (u != null) { vo.setStudentName(u.getRealName()); vo.setStudentNo(u.getStudentNo()); }
+            vo.setBedNo(bedMap.getOrDefault(c.getBedId(), ""));
+            vo.setRoomNo(roomMap.getOrDefault(c.getRoomId(), ""));
+            vo.setBuildingName(buildingMap.getOrDefault(c.getBuildingId(), ""));
+            return vo;
+        }).collect(Collectors.toList());
+    }
 }

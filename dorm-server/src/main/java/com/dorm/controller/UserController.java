@@ -9,7 +9,15 @@ import com.dorm.config.SecurityConfig.PasswordEncoder;
 import com.dorm.dto.CreateUserDTO;
 import com.dorm.dto.ResetPasswordDTO;
 import com.dorm.dto.UpdateUserDTO;
+import com.dorm.entity.AccomCheckin;
+import com.dorm.entity.DormBed;
+import com.dorm.entity.DormBuilding;
+import com.dorm.entity.DormRoom;
 import com.dorm.entity.SysUser;
+import com.dorm.mapper.AccomCheckinMapper;
+import com.dorm.mapper.DormBedMapper;
+import com.dorm.mapper.DormBuildingMapper;
+import com.dorm.mapper.DormRoomMapper;
 import com.dorm.mapper.SysUserMapper;
 import com.dorm.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +25,20 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class UserController {
     private final SysUserMapper userMapper;
+    private final AccomCheckinMapper checkinMapper;
+    private final DormBedMapper bedMapper;
+    private final DormRoomMapper roomMapper;
+    private final DormBuildingMapper buildingMapper;
     private final AuthService authService;
     private final PasswordEncoder passwordEncoder;
 
@@ -50,6 +66,43 @@ public class UserController {
         if (role != null) wrapper.eq(SysUser::getRole, role);
         wrapper.orderByAsc(SysUser::getRole).orderByAsc(SysUser::getCreateTime);
         Page<SysUser> result = userMapper.selectPage(new Page<>(page, size), wrapper);
+
+        // Enrich student users with dormitory info
+        if (!result.getRecords().isEmpty()) {
+            Set<Long> studentIds = result.getRecords().stream()
+                    .filter(u -> u.getRole() != null && u.getRole() == 1)
+                    .map(SysUser::getId).collect(Collectors.toSet());
+            if (!studentIds.isEmpty()) {
+                List<AccomCheckin> activeCheckins = checkinMapper.selectList(
+                        new LambdaQueryWrapper<AccomCheckin>()
+                                .in(AccomCheckin::getStudentId, studentIds)
+                                .eq(AccomCheckin::getStatus, 1));
+                if (!activeCheckins.isEmpty()) {
+                    Map<Long, AccomCheckin> checkinMap = activeCheckins.stream()
+                            .collect(Collectors.toMap(AccomCheckin::getStudentId, c -> c, (a, b) -> a));
+                    Set<Long> buildingIds = activeCheckins.stream().map(AccomCheckin::getBuildingId).collect(Collectors.toSet());
+                    Set<Long> roomIds = activeCheckins.stream().map(AccomCheckin::getRoomId).collect(Collectors.toSet());
+                    Set<Long> bedIds = activeCheckins.stream().map(AccomCheckin::getBedId).collect(Collectors.toSet());
+                    Map<Long, String> buildingMap = buildingMapper.selectBatchIds(buildingIds).stream()
+                            .collect(Collectors.toMap(DormBuilding::getId, DormBuilding::getName, (a, b) -> a));
+                    Map<Long, String> roomMap = roomMapper.selectBatchIds(roomIds).stream()
+                            .collect(Collectors.toMap(DormRoom::getId, DormRoom::getRoomNo, (a, b) -> a));
+                    Map<Long, String> bedMap = bedMapper.selectBatchIds(bedIds).stream()
+                            .collect(Collectors.toMap(DormBed::getId, DormBed::getBedNo, (a, b) -> a));
+                    result.getRecords().forEach(u -> {
+                        if (u.getRole() != null && u.getRole() == 1) {
+                            AccomCheckin checkin = checkinMap.get(u.getId());
+                            if (checkin != null) {
+                                u.setBuildingName(buildingMap.getOrDefault(checkin.getBuildingId(), ""));
+                                u.setRoomNo(roomMap.getOrDefault(checkin.getRoomId(), ""));
+                                u.setBedNo(bedMap.getOrDefault(checkin.getBedId(), ""));
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
         result.getRecords().forEach(u -> u.setPassword(null));
         return R.ok(result);
     }

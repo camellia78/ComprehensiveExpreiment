@@ -6,7 +6,20 @@
       </el-select>
       <el-button type="primary" @click="showDialog()">新增寝室</el-button>
     </div>
-    <el-table :data="list.records" border stripe v-loading="loading">
+    <el-table :data="list.records" border stripe v-loading="loading" @expand-change="onExpand">
+      <el-table-column type="expand">
+        <template #default="{ row }">
+          <div style="padding:8px 20px" v-loading="row._loadingStudents">
+            <el-empty v-if="row._students && row._students.length === 0" description="暂无入住学生" :image-size="60" />
+            <el-table v-if="row._students && row._students.length > 0" :data="row._students" border size="small">
+              <el-table-column prop="studentName" label="姓名" width="100" />
+              <el-table-column prop="studentNo" label="学号" width="140" />
+              <el-table-column prop="bedNo" label="床位" width="80" />
+              <el-table-column prop="checkinTime" label="入住时间" width="170" />
+            </el-table>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column prop="id" label="ID" width="180" />
       <el-table-column prop="roomNo" label="房间号" />
       <el-table-column label="楼栋" width="120"><template #default="{ row }">{{ getBuildingName(row.buildingId) }}</template></el-table-column>
@@ -42,7 +55,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { getBuildings, getRooms, addRoom, updateRoom, deleteRoom, getRoomBeds } from '../../api/dorm'
+import { getBuildings, getRooms, addRoom, updateRoom, deleteRoom, getRoomBeds, getRoomStudents } from '../../api/dorm'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const buildings = ref([])
@@ -57,6 +70,17 @@ const bedsVisible = ref(false); const beds = ref([])
 const getBuildingName = (id) => { const b = buildings.value.find(i => i.id === id); return b ? b.name : '' }
 const fetchBuildings = async () => { buildings.value = await getBuildings() }
 const fetchList = async () => { loading.value = true; list.value = await getRooms(query); loading.value = false }
+
+const onExpand = async (row, expanded) => {
+  if (expanded && !row._students) {
+    row._loadingStudents = true
+    try {
+      const res = await getRoomStudents(row.id)
+      row._students = Array.isArray(res) ? res : []
+    } catch (_) { row._students = [] }
+    row._loadingStudents = false
+  }
+}
 
 const showDialog = (row) => {
   if (row) { isEdit.value = true; editId.value = row.id; Object.assign(form, { roomNo: row.roomNo, buildingId: row.buildingId, floor: row.floor, totalBeds: row.totalBeds }) }
