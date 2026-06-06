@@ -30,7 +30,7 @@ public class UserController {
     public R<SysUser> profile(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
         SysUser user = userMapper.selectById(userId);
-        user.setPassword(null);
+        if (user != null) user.setPassword(null);
         return R.ok(user);
     }
 
@@ -38,13 +38,16 @@ public class UserController {
     @RequireRole(0)
     public R<Page<SysUser>> listUsers(@RequestParam(defaultValue = "1") int page,
                                       @RequestParam(defaultValue = "10") int size,
-                                      @RequestParam(required = false) String keyword) {
+                                      @RequestParam(required = false) String keyword,
+                                      @RequestParam(required = false) Integer role) {
         LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
         if (keyword != null && !keyword.isEmpty()) {
             wrapper.and(w -> w.like(SysUser::getUsername, keyword)
                     .or().like(SysUser::getRealName, keyword)
-                    .or().like(SysUser::getStudentNo, keyword));
+                    .or().like(SysUser::getStudentNo, keyword)
+                    .or().like(SysUser::getPhone, keyword));
         }
+        if (role != null) wrapper.eq(SysUser::getRole, role);
         wrapper.orderByAsc(SysUser::getRole).orderByAsc(SysUser::getCreateTime);
         Page<SysUser> result = userMapper.selectPage(new Page<>(page, size), wrapper);
         result.getRecords().forEach(u -> u.setPassword(null));
@@ -57,6 +60,11 @@ public class UserController {
         SysUser exist = userMapper.selectOne(
                 new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, dto.getUsername()));
         if (exist != null) throw new BizException("用户名已存在");
+        if (dto.getStudentNo() != null && !dto.getStudentNo().isEmpty()) {
+            SysUser existNo = userMapper.selectOne(
+                    new LambdaQueryWrapper<SysUser>().eq(SysUser::getStudentNo, dto.getStudentNo()));
+            if (existNo != null) throw new BizException("学号已存在");
+        }
         SysUser user = new SysUser();
         user.setUsername(dto.getUsername());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -74,6 +82,12 @@ public class UserController {
     public R<?> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserDTO dto) {
         SysUser user = userMapper.selectById(id);
         if (user == null) throw new BizException("用户不存在");
+        if (dto.getStudentNo() != null && !dto.getStudentNo().isEmpty()
+                && !dto.getStudentNo().equals(user.getStudentNo())) {
+            SysUser existNo = userMapper.selectOne(
+                    new LambdaQueryWrapper<SysUser>().eq(SysUser::getStudentNo, dto.getStudentNo()));
+            if (existNo != null) throw new BizException("学号已被其他用户使用");
+        }
         if (dto.getRealName() != null) user.setRealName(dto.getRealName());
         if (dto.getStudentNo() != null) user.setStudentNo(dto.getStudentNo());
         if (dto.getPhone() != null) user.setPhone(dto.getPhone());
