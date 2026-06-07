@@ -56,6 +56,7 @@
           <el-table-column label="创建时间" prop="createTime" min-width="170" />
           <el-table-column label="操作" min-width="240">
             <template #default="{ row }">
+              <el-button v-if="!row.buildingName" size="small" type="success" @click="goCheckin(row)">入住</el-button>
               <el-button size="small" @click="showEdit(row)">编辑</el-button>
               <el-button size="small" type="warning" @click="showResetPwd(row)">重置密码</el-button>
               <el-popconfirm v-if="currentRole === 0" title="确定删除该学生吗？" @confirm="handleDelete(row.id)">
@@ -129,6 +130,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { getUsers, createUser, updateUser, deleteUser, resetPassword } from '../../api/auth'
 import { ElMessage } from 'element-plus'
 import { Search, Male, Female } from '@element-plus/icons-vue'
@@ -139,6 +141,7 @@ const page = ref(1)
 const size = ref(20)
 const keyword = ref('')
 const activeTab = ref('admin')
+const router = useRouter()
 const currentRole = ref(parseInt(localStorage.getItem('role') || '0'))
 const hasSuperAdmin = ref(false)
 
@@ -211,6 +214,7 @@ const handleSubmit = async () => {
   } catch (_) {} finally { submitting.value = false }
 }
 
+const goCheckin = (row) => { router.push('/accom/checkin') }
 const handleDelete = async (id) => {
   try { await deleteUser(id); ElMessage.success('删除成功'); fetchList() } catch (_) {}
 }
