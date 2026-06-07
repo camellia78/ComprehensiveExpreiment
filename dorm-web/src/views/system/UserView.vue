@@ -13,9 +13,9 @@
     <el-tabs v-model="activeTab" @tab-change="onTabChange">
       <el-tab-pane label="管理员" name="admin">
         <el-table :data="list.records" border stripe v-loading="loading">
-          <el-table-column prop="username" label="用户名" width="120" />
-          <el-table-column prop="realName" label="姓名" width="100" />
-          <el-table-column label="角色" width="100" align="center">
+          <el-table-column prop="username" label="用户名" min-width="100" />
+          <el-table-column prop="realName" label="姓名" min-width="80" />
+          <el-table-column label="角色" min-width="90" align="center">
             <template #default="{ row }">
               <el-tag v-if="row.role === 0" type="danger" size="small">总管理员</el-tag>
               <el-tag v-else-if="row.role === 2" type="warning" size="small">二级管理员</el-tag>
@@ -23,7 +23,7 @@
           </el-table-column>
           <el-table-column prop="phone" label="电话" min-width="140" />
           <el-table-column label="创建时间" prop="createTime" min-width="170" />
-          <el-table-column label="操作" width="280" fixed="right">
+          <el-table-column label="操作" min-width="240">
             <template #default="{ row }">
               <el-button v-if="currentRole === 0 || row.role !== 0" size="small" @click="showEdit(row)">编辑</el-button>
               <el-button v-if="currentRole === 0 || row.role !== 0" size="small" type="warning" @click="showResetPwd(row)">重置密码</el-button>
@@ -37,8 +37,8 @@
 
       <el-tab-pane label="学生" name="student">
         <el-table :data="list.records" border stripe v-loading="loading">
-          <el-table-column prop="username" label="用户名" width="120" />
-          <el-table-column prop="realName" label="姓名" width="100" />
+          <el-table-column prop="username" label="用户名" min-width="100" />
+          <el-table-column prop="realName" label="姓名" min-width="80" />
           <el-table-column prop="studentNo" label="学号" width="120" />
           <el-table-column prop="phone" label="电话" min-width="140" />
           <el-table-column label="性别" width="60" align="center">
@@ -54,7 +54,7 @@
             </template>
           </el-table-column>
           <el-table-column label="创建时间" prop="createTime" min-width="170" />
-          <el-table-column label="操作" width="280" fixed="right">
+          <el-table-column label="操作" min-width="240">
             <template #default="{ row }">
               <el-button size="small" @click="showEdit(row)">编辑</el-button>
               <el-button size="small" type="warning" @click="showResetPwd(row)">重置密码</el-button>
