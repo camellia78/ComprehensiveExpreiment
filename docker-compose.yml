@@ -50,4 +50,4 @@
 volumes:
   pgdata:
     name: dorm_pgdata
-    external: false
+    external: true
