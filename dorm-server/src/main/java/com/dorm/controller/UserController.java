@@ -129,7 +129,7 @@ public class UserController {
         user.setPassword(AuthService.encodePassword(dto.getPassword()));
         user.setRealName(dto.getRealName());
         user.setRole(dto.getRole());
-        user.setStudentNo(dto.getStudentNo());
+        user.setStudentNo(dto.getStudentNo() != null && !dto.getStudentNo().isEmpty() ? dto.getStudentNo() : null);
         user.setPhone(dto.getPhone());
         user.setGender(dto.getGender() != null ? dto.getGender() : 0);
         userMapper.insert(user);
@@ -153,7 +153,7 @@ public class UserController {
             if (existNo != null) throw new BizException("学号已被其他用户使用");
         }
         if (dto.getRealName() != null) user.setRealName(dto.getRealName());
-        if (dto.getStudentNo() != null) user.setStudentNo(dto.getStudentNo());
+        if (dto.getStudentNo() != null) user.setStudentNo(dto.getStudentNo() != null && !dto.getStudentNo().isEmpty() ? dto.getStudentNo() : null);
         if (dto.getPhone() != null) user.setPhone(dto.getPhone());
         if (dto.getGender() != null) user.setGender(dto.getGender());
         if (dto.getRole() != null) {
