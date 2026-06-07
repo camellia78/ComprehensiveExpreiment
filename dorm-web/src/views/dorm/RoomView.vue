@@ -22,7 +22,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination v-model:current-page="query.page" :page-size="query.size" :total="list.total" layout="prev, pager, next, total" @current-change="fetchList" style="margin-top:16px;justify-content:flex-end" />
+    <el-pagination v-model:current-page="query.page" :page-size="query.size" :total="list.total" layout="total, prev, pager, next, sizes" :page-sizes="[10,20,50,100]" @current-change="fetchList" style="margin-top:16px;justify-content:flex-end" />
     <el-dialog :title="isEdit ? '编辑寝室' : '新增寝室'" v-model="dialogVisible" width="500px">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
         <el-form-item label="房间号" prop="roomNo"><el-input v-model="form.roomNo" /></el-form-item>
@@ -59,7 +59,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 const buildings = ref([])
 const list = ref({ records: [], total: 0 })
 const loading = ref(false)
-const query = reactive({ page: 1, size: 10, buildingId: null })
+const query = reactive({ page: 1, size: 50, buildingId: null })
 const dialogVisible = ref(false); const isEdit = ref(false); const editId = ref(null); const formRef = ref()
 const form = reactive({ roomNo: '', buildingId: null, floor: 1, totalBeds: 4 })
 const rules = { roomNo: [{ required: true, message: '请输入房间号' }], buildingId: [{ required: true, message: '请选择楼栋' }] }
