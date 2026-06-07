@@ -1,21 +1,21 @@
-<template>
+﻿<template>
   <div class="dashboard">
     <div class="welcome-section">
       <h2>👋 欢迎使用学生宿舍管理系统</h2>
       <p>Dormitory Management System — 高效、便捷的宿舍管理平台</p>
     </div>
     <el-row :gutter="20" class="card-row">
-      <el-col :span="8" v-if="role === 0">
+      <el-col :span="8" v-if="role === 0 || role === 2">
         <div class="dash-card card-building" @click="$router.push('/dorm/buildings')"><div class="card-icon">🏢</div><div class="card-info"><div class="card-title">宿舍管理</div><div class="card-desc">维护楼栋、寝室信息，查询空闲床位</div></div><el-icon class="card-arrow"><ArrowRight /></el-icon></div>
       </el-col>
-      <el-col :span="8" v-if="role === 0">
+      <el-col :span="8" v-if="role === 0 || role === 2">
         <div class="dash-card card-accom" @click="$router.push('/accom/checkin')"><div class="card-icon">🛏️</div><div class="card-info"><div class="card-title">住宿业务</div><div class="card-desc">办理学生入住、调寝、退宿</div></div><el-icon class="card-arrow"><ArrowRight /></el-icon></div>
       </el-col>
       <el-col :span="8">
         <div class="dash-card card-repair" @click="$router.push(role === 0 ? '/repair/manage' : '/repair/my')"><div class="card-icon">🔧</div><div class="card-info"><div class="card-title">报修服务</div><div class="card-desc">{{ role === 0 ? '处置维修工单，跟踪维修进度' : '提交报修申请，查看处理状态' }}</div></div><el-icon class="card-arrow"><ArrowRight /></el-icon></div>
       </el-col>
     </el-row>
-    <el-row :gutter="20" class="card-row" v-if="role === 0">
+    <el-row :gutter="20" class="card-row" v-if="role === 0 || role === 2">
       <el-col :span="8">
         <div class="dash-card card-user" @click="$router.push('/system/users')"><div class="card-icon">👥</div><div class="card-info"><div class="card-title">用户管理</div><div class="card-desc">管理系统用户账号与权限</div></div><el-icon class="card-arrow"><ArrowRight /></el-icon></div>
       </el-col>

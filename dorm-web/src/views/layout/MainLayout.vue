@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <el-container class="main-layout">
     <el-aside :width="isCollapse ? '64px' : '220px'" class="sidebar">
       <div class="logo">
@@ -16,12 +16,10 @@
       >
         <el-menu-item index="/dashboard"><el-icon><HomeFilled /></el-icon><span>工作台</span></el-menu-item>
         <template v-if="role === 0 || role === 2">
-          <template v-if="role === 0">
-            <el-sub-menu index="dorm"><template #title><el-icon><OfficeBuilding /></el-icon><span>宿舍管理</span></template>
+          <el-sub-menu index="dorm"><template #title><el-icon><OfficeBuilding /></el-icon><span>宿舍管理</span></template>
               <el-menu-item index="/dorm/buildings">楼栋管理</el-menu-item>
               <el-menu-item index="/dorm/rooms">寝室管理</el-menu-item>
             </el-sub-menu>
-          </template>
           <el-sub-menu index="accom"><template #title><el-icon><UserFilled /></el-icon><span>住宿业务</span></template>
             <el-menu-item index="/accom/checkin">入住登记</el-menu-item>
             <el-menu-item index="/accom/transfer">调宿处理</el-menu-item>
