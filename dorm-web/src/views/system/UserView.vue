@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div>
     <div class="toolbar">
       <h4>用户管理</h4>
@@ -21,8 +21,8 @@
               <el-tag v-else-if="row.role === 2" type="warning" size="small">二级管理员</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="phone" label="电话" width="140" />
-          <el-table-column label="创建时间" prop="createTime" width="170" />
+          <el-table-column prop="phone" label="电话" min-width="140" />
+          <el-table-column label="创建时间" prop="createTime" min-width="170" />
           <el-table-column label="操作" width="280" fixed="right">
             <template #default="{ row }">
               <el-button v-if="currentRole === 0 || row.role !== 0" size="small" @click="showEdit(row)">编辑</el-button>
@@ -40,7 +40,7 @@
           <el-table-column prop="username" label="用户名" width="120" />
           <el-table-column prop="realName" label="姓名" width="100" />
           <el-table-column prop="studentNo" label="学号" width="120" />
-          <el-table-column prop="phone" label="电话" width="140" />
+          <el-table-column prop="phone" label="电话" min-width="140" />
           <el-table-column label="性别" width="60" align="center">
             <template #default="{ row }">
               <el-icon v-if="row.gender === 1" color="#409eff"><Male /></el-icon>
@@ -53,7 +53,7 @@
               <el-tag v-else type="info" size="small">未入住</el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="创建时间" prop="createTime" width="170" />
+          <el-table-column label="创建时间" prop="createTime" min-width="170" />
           <el-table-column label="操作" width="280" fixed="right">
             <template #default="{ row }">
               <el-button size="small" @click="showEdit(row)">编辑</el-button>
