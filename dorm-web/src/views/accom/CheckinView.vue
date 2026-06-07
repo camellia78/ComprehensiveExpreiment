@@ -34,6 +34,7 @@ import { getBuildings, getFreeBeds, getRooms, getRoomBeds } from '../../api/dorm
 import { getUsers, getCheckins, doCheckin } from '../../api/accom'
 import { ElMessage } from 'element-plus'
 
+const allStudents = ref([])
 const buildings = ref([]); const students = ref([]); const freeBeds = ref([]); const checkins = ref([]); const rooms = ref([]); const allBeds = ref([])
 const formRef = ref()
 const form = reactive({ studentId: null, buildingId: null, roomId: null, bedId: null })
@@ -42,13 +43,13 @@ const rules = { studentId: [{ required: true }], buildingId: [{ required: true }
 const filteredRooms = computed(() => rooms.value.filter(r => r.buildingId === form.buildingId))
 const getBuildingName = (id) => { const b = buildings.value.find(i => i.id === id); return b && b.name }
 const getRoomNo = (id) => { const r = rooms.value.find(i => i.id === id); return r && r.roomNo }
-const getStudentName = (id) => { const s = students.value.find(i => i.id === id); return s && s.realName }
+const getStudentName = (id) => { const s = allStudents.value.find(i => i.id === id); return s && s.realName }
 const getBedNo = (id) => { const b = allBeds.value.find(i => i.id === id); return b && b.bedNo }
 
 const fetchData = async () => {
   buildings.value = await getBuildings()
   checkins.value = await getCheckins(); const ids = new Set(checkins.value.map(c => c.studentId))
-  const userPage = await getUsers({ page: 1, size: 100 }); students.value = userPage.records.filter(u => u.role === 1 && !ids.has(u.id))
+  const userPage = await getUsers({ page: 1, size: 100 }); allStudents.value = userPage.records; students.value = userPage.records.filter(u => u.role === 1 && !ids.has(u.id))
   const roomPage = await getRooms({ page: 1, size: 200 }); rooms.value = roomPage.records
   const bedList = []
   for (const r of rooms.value) {
