@@ -57,6 +57,14 @@ public class AuthService {
         }
     }
 
+    public void changePassword(Long userId, String oldPassword, String newPassword) {
+        SysUser user = userMapper.selectById(userId);
+        if (user == null) throw new BizException("用户不存在");
+        if (!verifyPassword(oldPassword, user.getPassword())) throw new BizException("原密码错误");
+        user.setPassword(encodePassword(newPassword));
+        userMapper.updateById(user);
+    }
+
     public void resetPassword(Long userId, String newPassword) {
         SysUser user = userMapper.selectById(userId);
         if (user == null) throw new BizException("用户不存在");

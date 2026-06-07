@@ -2,9 +2,9 @@
   <el-container class="main-layout">
     <el-aside :width="isCollapse ? '64px' : '220px'" class="sidebar">
       <div class="logo">
-        <span class="logo-icon" v-if="!isCollapse">🏠</span>
+        <span class="logo-icon" v-if="!isCollapse">&#127968;</span>
         <span class="logo-text" v-if="!isCollapse">宿舍管理系统</span>
-        <span class="logo-icon" v-else>🏠</span>
+        <span class="logo-icon" v-else>&#127968;</span>
       </div>
       <el-menu
         :default-active="route.path"
@@ -15,14 +15,16 @@
         router
       >
         <el-menu-item index="/dashboard"><el-icon><HomeFilled /></el-icon><span>工作台</span></el-menu-item>
-        <template v-if="role === 0">
-          <el-sub-menu index="dorm"><template #title><el-icon><OfficeBuilding /></el-icon><span>宿舍管理</span></template>
-            <el-menu-item index="/dorm/buildings">楼栋管理</el-menu-item>
-            <el-menu-item index="/dorm/rooms">寝室管理</el-menu-item>
-          </el-sub-menu>
+        <template v-if="role === 0 || role === 2">
+          <template v-if="role === 0">
+            <el-sub-menu index="dorm"><template #title><el-icon><OfficeBuilding /></el-icon><span>宿舍管理</span></template>
+              <el-menu-item index="/dorm/buildings">楼栋管理</el-menu-item>
+              <el-menu-item index="/dorm/rooms">寝室管理</el-menu-item>
+            </el-sub-menu>
+          </template>
           <el-sub-menu index="accom"><template #title><el-icon><UserFilled /></el-icon><span>住宿业务</span></template>
             <el-menu-item index="/accom/checkin">入住登记</el-menu-item>
-            <el-menu-item index="/accom/transfer">调寝处理</el-menu-item>
+            <el-menu-item index="/accom/transfer">调宿处理</el-menu-item>
             <el-menu-item index="/accom/checkout">退宿登记</el-menu-item>
           </el-sub-menu>
           <el-menu-item index="/repair/manage"><el-icon><Tools /></el-icon><span>工单处置</span></el-menu-item>
@@ -45,7 +47,7 @@
           <span class="user-info">
             <el-icon><User /></el-icon>
             {{ user && user.realName }}
-            <el-tag :type="role === 0 ? 'danger' : 'success'" size="small" style="margin-left:8px">{{ role === 0 ? '管理员' : '学生' }}</el-tag>
+            <el-tag :type="role === 0 ? 'danger' : role === 2 ? 'warning' : 'success'" size="small" style="margin-left:8px">{{ role === 0 ? '超级管理员' : role === 2 ? '二级管理员' : '学生' }}</el-tag>
           </span>
           <el-button text type="danger" @click="handleLogout">退出登录</el-button>
         </div>

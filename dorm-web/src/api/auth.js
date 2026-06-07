@@ -1,5 +1,6 @@
 import request from './request'
 export const login = (data) => request.post('/auth/login', data)
+export const changePassword = (data) => request.put('/auth/change-password', data)
 export const getProfile = () => request.get('/profile')
 export const getUsers = (params) => request.get('/users', { params })
 export const createUser = (data) => request.post('/users', data)
