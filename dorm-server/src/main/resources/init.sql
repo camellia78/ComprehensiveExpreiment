@@ -1,4 +1,24 @@
-﻿-- ========================================
+﻿
+-- Sequences for auto-increment
+CREATE SEQUENCE IF NOT EXISTS sys_user_seq START 100;
+ALTER TABLE sys_user ALTER COLUMN id SET DEFAULT nextval('sys_user_seq');
+CREATE SEQUENCE IF NOT EXISTS dorm_building_seq START 100;
+ALTER TABLE dorm_building ALTER COLUMN id SET DEFAULT nextval('dorm_building_seq');
+CREATE SEQUENCE IF NOT EXISTS dorm_room_seq START 100;
+ALTER TABLE dorm_room ALTER COLUMN id SET DEFAULT nextval('dorm_room_seq');
+CREATE SEQUENCE IF NOT EXISTS dorm_bed_seq START 1000;
+ALTER TABLE dorm_bed ALTER COLUMN id SET DEFAULT nextval('dorm_bed_seq');
+CREATE SEQUENCE IF NOT EXISTS accom_checkin_seq START 100;
+ALTER TABLE accom_checkin ALTER COLUMN id SET DEFAULT nextval('accom_checkin_seq');
+CREATE SEQUENCE IF NOT EXISTS accom_transfer_seq START 1;
+ALTER TABLE accom_transfer ALTER COLUMN id SET DEFAULT nextval('accom_transfer_seq');
+CREATE SEQUENCE IF NOT EXISTS accom_checkout_seq START 1;
+ALTER TABLE accom_checkout ALTER COLUMN id SET DEFAULT nextval('accom_checkout_seq');
+CREATE SEQUENCE IF NOT EXISTS repair_request_seq START 1;
+ALTER TABLE repair_request ALTER COLUMN id SET DEFAULT nextval('repair_request_seq');
+CREATE SEQUENCE IF NOT EXISTS repair_process_seq START 1;
+ALTER TABLE repair_process ALTER COLUMN id SET DEFAULT nextval('repair_process_seq');
+-- ========================================
 -- openGauss
 -- ========================================
 
