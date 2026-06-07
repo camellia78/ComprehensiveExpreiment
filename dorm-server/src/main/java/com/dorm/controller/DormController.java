@@ -6,6 +6,7 @@ import com.dorm.dto.BuildingDTO;
 import com.dorm.dto.RoomDTO;
 import com.dorm.dto.RoomQueryDTO;
 import com.dorm.entity.DormBed;
+import com.dorm.entity.SysUser;
 import com.dorm.entity.DormBuilding;
 import com.dorm.entity.DormRoom;
 import com.dorm.service.DormService;
@@ -51,4 +52,6 @@ public class DormController {
 
     @GetMapping("/buildings/{id}/free-beds")
     public R<List<DormBed>> listFreeBeds(@PathVariable Long id) { return R.ok(dormService.listFreeBeds(id)); }
+    @GetMapping("/rooms/{id}/students")
+    public R<List<SysUser>> listRoomStudents(@PathVariable Long id) { return R.ok(dormService.listRoomStudents(id)); }
 }

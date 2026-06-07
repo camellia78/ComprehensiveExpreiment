@@ -9,6 +9,9 @@ import com.dorm.dto.RoomDTO;
 import com.dorm.dto.RoomQueryDTO;
 import com.dorm.entity.*;
 import com.dorm.mapper.*;
+import com.dorm.entity.AccomCheckin;
+import com.dorm.entity.SysUser;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +26,8 @@ public class DormService {
     private final DormBuildingMapper buildingMapper;
     private final DormRoomMapper roomMapper;
     private final DormBedMapper bedMapper;
+    private final AccomCheckinMapper checkinMapper;
+    private final SysUserMapper sysUserMapper;
 
     public List<DormBuilding> listBuildings() { return buildingMapper.selectList(null); }
 
@@ -100,5 +105,23 @@ public class DormService {
                     new LambdaQueryWrapper<DormBed>().eq(DormBed::getRoomId, room.getId()).eq(DormBed::getStatus, 0)));
         }
         return freeBeds;
+    }
+    public List<SysUser> listRoomStudents(Long roomId) {
+        List<AccomCheckin> checkins = checkinMapper.selectList(
+                new LambdaQueryWrapper<AccomCheckin>()
+                        .eq(AccomCheckin::getRoomId, roomId)
+                        .eq(AccomCheckin::getStatus, 1));
+        return checkins.stream().map(c -> {
+            SysUser user = sysUserMapper.selectById(c.getStudentId());
+            if (user != null) {
+                DormBed bed = bedMapper.selectById(c.getBedId());
+                if (bed != null) user.setBedNo(bed.getBedNo());
+                DormBuilding building = buildingMapper.selectById(c.getBuildingId());
+                if (building != null) user.setBuildingName(building.getName());
+                DormRoom room = roomMapper.selectById(c.getRoomId());
+                if (room != null) user.setRoomNo(room.getRoomNo());
+            }
+            return user;
+        }).filter(u -> u != null).collect(Collectors.toList());
     }
 }
