@@ -1,25 +1,5 @@
-﻿
--- Sequences for auto-increment
-CREATE SEQUENCE IF NOT EXISTS sys_user_seq START 100;
-ALTER TABLE sys_user ALTER COLUMN id SET DEFAULT nextval('sys_user_seq');
-CREATE SEQUENCE IF NOT EXISTS dorm_building_seq START 100;
-ALTER TABLE dorm_building ALTER COLUMN id SET DEFAULT nextval('dorm_building_seq');
-CREATE SEQUENCE IF NOT EXISTS dorm_room_seq START 100;
-ALTER TABLE dorm_room ALTER COLUMN id SET DEFAULT nextval('dorm_room_seq');
-CREATE SEQUENCE IF NOT EXISTS dorm_bed_seq START 1000;
-ALTER TABLE dorm_bed ALTER COLUMN id SET DEFAULT nextval('dorm_bed_seq');
-CREATE SEQUENCE IF NOT EXISTS accom_checkin_seq START 100;
-ALTER TABLE accom_checkin ALTER COLUMN id SET DEFAULT nextval('accom_checkin_seq');
-CREATE SEQUENCE IF NOT EXISTS accom_transfer_seq START 1;
-ALTER TABLE accom_transfer ALTER COLUMN id SET DEFAULT nextval('accom_transfer_seq');
-CREATE SEQUENCE IF NOT EXISTS accom_checkout_seq START 1;
-ALTER TABLE accom_checkout ALTER COLUMN id SET DEFAULT nextval('accom_checkout_seq');
-CREATE SEQUENCE IF NOT EXISTS repair_request_seq START 1;
-ALTER TABLE repair_request ALTER COLUMN id SET DEFAULT nextval('repair_request_seq');
-CREATE SEQUENCE IF NOT EXISTS repair_process_seq START 1;
-ALTER TABLE repair_process ALTER COLUMN id SET DEFAULT nextval('repair_process_seq');
 -- ========================================
--- openGauss
+-- 学生宿舍管理系统 - 完整初始化脚本
 -- ========================================
 
 CREATE TABLE sys_user (
@@ -149,34 +129,54 @@ CREATE TABLE repair_process (
 );
 CREATE INDEX idx_process_request ON repair_process(request_id);
 
-INSERT INTO sys_user(id, username, password, real_name, role, student_no, phone, gender, is_deleted)
-VALUES (1, 'admin', '123456', 'system admin', 0, NULL, '13800000000', 0, 0);
-INSERT INTO sys_user(id, username, password, real_name, role, student_no, phone, gender, is_deleted)
-VALUES (2, 'zhangsan', '123456', 'zhangsan', 1, '2024001', '13800000001', 1, 0);
-INSERT INTO sys_user(id, username, password, real_name, role, student_no, phone, gender, is_deleted)
-VALUES (3, 'lisi', '123456', 'lisi', 1, '2024002', '13800000002', 0, 0);
+-- ===== 序列 =====
+CREATE SEQUENCE sys_user_seq START 100;
+ALTER TABLE sys_user ALTER COLUMN id SET DEFAULT nextval('sys_user_seq');
+CREATE SEQUENCE dorm_building_seq START 100;
+ALTER TABLE dorm_building ALTER COLUMN id SET DEFAULT nextval('dorm_building_seq');
+CREATE SEQUENCE dorm_room_seq START 100;
+ALTER TABLE dorm_room ALTER COLUMN id SET DEFAULT nextval('dorm_room_seq');
+CREATE SEQUENCE dorm_bed_seq START 1000;
+ALTER TABLE dorm_bed ALTER COLUMN id SET DEFAULT nextval('dorm_bed_seq');
+CREATE SEQUENCE accom_checkin_seq START 100;
+ALTER TABLE accom_checkin ALTER COLUMN id SET DEFAULT nextval('accom_checkin_seq');
+CREATE SEQUENCE accom_transfer_seq START 1;
+ALTER TABLE accom_transfer ALTER COLUMN id SET DEFAULT nextval('accom_transfer_seq');
+CREATE SEQUENCE accom_checkout_seq START 1;
+ALTER TABLE accom_checkout ALTER COLUMN id SET DEFAULT nextval('accom_checkout_seq');
+CREATE SEQUENCE repair_request_seq START 1;
+ALTER TABLE repair_request ALTER COLUMN id SET DEFAULT nextval('repair_request_seq');
+CREATE SEQUENCE repair_process_seq START 1;
+ALTER TABLE repair_process ALTER COLUMN id SET DEFAULT nextval('repair_process_seq');
 
-INSERT INTO dorm_building(id, name, building_no, floors, building_type, is_deleted)
-VALUES (1, 'Bldg 1', 'A01', 6, 0, 0);
-INSERT INTO dorm_building(id, name, building_no, floors, building_type, is_deleted)
-VALUES (2, 'Bldg 2', 'A02', 6, 1, 0);
+-- ===== 初始数据 =====
+-- 管理员
+INSERT INTO sys_user(id, username, password, real_name, role, phone, gender)
+VALUES (1, 'admin', '123456', 'system admin', 0, '13800000000', 0);
 
-INSERT INTO dorm_room(id, room_no, building_id, floor, total_beds, occupied_beds, status, is_deleted)
-VALUES (1, '101', 1, 1, 4, 0, 0, 0);
-INSERT INTO dorm_room(id, room_no, building_id, floor, total_beds, occupied_beds, status, is_deleted)
-VALUES (2, '102', 1, 1, 4, 0, 0, 0);
-INSERT INTO dorm_room(id, room_no, building_id, floor, total_beds, occupied_beds, status, is_deleted)
-VALUES (3, '201', 2, 2, 4, 0, 0, 0);
+-- 4栋楼 (2男2女)
+INSERT INTO dorm_building(id, name, building_no, floors, building_type) VALUES
+(1, '男生楼A', 'M01', 3, 0),
+(2, '男生楼B', 'M02', 3, 0),
+(3, '女生楼A', 'F01', 3, 1),
+(4, '女生楼B', 'F02', 3, 1);
 
-INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (1, 'A', 1, 0, 0);
-INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (2, 'B', 1, 0, 0);
-INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (3, 'C', 1, 0, 0);
-INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (4, 'D', 1, 0, 0);
-INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (5, 'A', 2, 0, 0);
-INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (6, 'B', 2, 0, 0);
-INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (7, 'C', 2, 0, 0);
-INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (8, 'D', 2, 0, 0);
-INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (9, 'A', 3, 0, 0);
-INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (10, 'B', 3, 0, 0);
-INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (11, 'C', 3, 0, 0);
-INSERT INTO dorm_bed(id, bed_no, room_id, status, is_deleted) VALUES (12, 'D', 3, 0, 0);
+-- 48间宿舍 (每栋3层×4间)
+INSERT INTO dorm_room(id, room_no, building_id, floor, total_beds) VALUES
+(1,'101',1,1,6),(2,'102',1,1,6),(3,'103',1,1,6),(4,'104',1,1,6),
+(5,'201',1,2,6),(6,'202',1,2,6),(7,'203',1,2,6),(8,'204',1,2,6),
+(9,'301',1,3,6),(10,'302',1,3,6),(11,'303',1,3,6),(12,'304',1,3,6),
+(13,'101',2,1,6),(14,'102',2,1,6),(15,'103',2,1,6),(16,'104',2,1,6),
+(17,'201',2,2,6),(18,'202',2,2,6),(19,'203',2,2,6),(20,'204',2,2,6),
+(21,'301',2,3,6),(22,'302',2,3,6),(23,'303',2,3,6),(24,'304',2,3,6),
+(25,'101',3,1,6),(26,'102',3,1,6),(27,'103',3,1,6),(28,'104',3,1,6),
+(29,'201',3,2,6),(30,'202',3,2,6),(31,'203',3,2,6),(32,'204',3,2,6),
+(33,'301',3,3,6),(34,'302',3,3,6),(35,'303',3,3,6),(36,'304',3,3,6),
+(37,'101',4,1,6),(38,'102',4,1,6),(39,'103',4,1,6),(40,'104',4,1,6),
+(41,'201',4,2,6),(42,'202',4,2,6),(43,'203',4,2,6),(44,'204',4,2,6),
+(45,'301',4,3,6),(46,'302',4,3,6),(47,'303',4,3,6),(48,'304',4,3,6);
+
+-- 288个床位
+INSERT INTO dorm_bed(id, bed_no, room_id, status)
+SELECT (r.id-1)*6 + s.rn, chr((65 + s.rn - 1)::int), r.id, 0
+FROM dorm_room r CROSS JOIN generate_series(1,6) AS s(rn);
