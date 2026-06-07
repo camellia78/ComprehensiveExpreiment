@@ -1,4 +1,4 @@
-services:
+﻿services:
   database:
     image: postgres:15
     container_name: dorm-db
@@ -49,3 +49,5 @@ services:
 
 volumes:
   pgdata:
+    name: dorm_pgdata
+    external: false

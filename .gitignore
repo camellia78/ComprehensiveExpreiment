@@ -1,4 +1,4 @@
-# Maven
+﻿# Maven
 target/
 
 # Node
@@ -18,3 +18,9 @@ Thumbs.db
 dorm-server/data/
 dorm-web/src/.vs/
 
+
+# Temp files
+*.sql
+*.sh
+*.tar.gz
+*.err
