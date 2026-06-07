@@ -59,7 +59,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 const buildings = ref([])
 const list = ref({ records: [], total: 0 })
 const loading = ref(false)
-const query = reactive({ page: 1, size: 50, buildingId: null })
+const query = reactive({ page: 1, size: 50, buildingId: 1 })
 const dialogVisible = ref(false); const isEdit = ref(false); const editId = ref(null); const formRef = ref()
 const form = reactive({ roomNo: '', buildingId: null, floor: 1, totalBeds: 4 })
 const rules = { roomNo: [{ required: true, message: '请输入房间号' }], buildingId: [{ required: true, message: '请选择楼栋' }] }
