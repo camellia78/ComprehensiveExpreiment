@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Data
 @TableName("dorm_room")
 public class DormRoom {
-    @TableId(type = IdType.ASSIGN_ID)
+    @TableId(type = IdType.AUTO)
     private Long id;
     private String roomNo;
     private Long buildingId;

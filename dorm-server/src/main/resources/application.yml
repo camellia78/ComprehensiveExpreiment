@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:15432/dormitory
+    url: jdbc:postgresql://120.26.50.140:15432/dormitory
     username: gaussdb
     password: Enmo@123
 

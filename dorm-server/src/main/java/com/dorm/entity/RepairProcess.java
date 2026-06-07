@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Data
 @TableName("repair_process")
 public class RepairProcess {
-    @TableId(type = IdType.ASSIGN_ID)
+    @TableId(type = IdType.AUTO)
     private Long id;
     private Long requestId;
     private Long adminId;
