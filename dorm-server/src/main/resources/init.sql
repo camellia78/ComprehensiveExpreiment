@@ -1,4 +1,4 @@
--- ========================================
+﻿-- ========================================
 -- 学生宿舍管理系统 - 完整初始化脚本
 -- ========================================
 
@@ -15,8 +15,8 @@ CREATE TABLE sys_user (
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-CREATE UNIQUE INDEX uk_username ON sys_user(username);
-CREATE UNIQUE INDEX uk_student_no ON sys_user(student_no);
+CREATE UNIQUE INDEX uk_username ON sys_user(username) WHERE is_deleted = 0;
+CREATE UNIQUE INDEX uk_student_no ON sys_user(student_no) WHERE is_deleted = 0;
 
 CREATE TABLE dorm_building (
     id BIGINT PRIMARY KEY,
