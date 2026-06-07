@@ -1,5 +1,6 @@
 package com.dorm.interceptor;
 
+import com.dorm.annotation.RequireRole;
 import com.dorm.common.JwtUtils;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 
 @Component
 @RequiredArgsConstructor
@@ -26,6 +28,17 @@ public class AuthInterceptor implements HandlerInterceptor {
         request.setAttribute("userId", claims.get("userId", Long.class));
         request.setAttribute("username", claims.get("username", String.class));
         request.setAttribute("role", claims.get("role", Integer.class));
+
+        HandlerMethod handlerMethod = (HandlerMethod) handler;
+        RequireRole requireRole = handlerMethod.getMethodAnnotation(RequireRole.class);
+        if (requireRole == null) {
+            requireRole = handlerMethod.getBeanType().getAnnotation(RequireRole.class);
+        }
+        if (requireRole != null) {
+            Integer userRole = claims.get("role", Integer.class);
+            boolean allowed = Arrays.stream(requireRole.value()).anyMatch(r -> r == userRole);
+            if (!allowed) { response.setStatus(403); return false; }
+        }
         return true;
     }
 }

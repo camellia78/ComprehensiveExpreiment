@@ -38,13 +38,16 @@ public class AuthService {
 
     private boolean verifyPassword(String input, String stored) {
         if (stored.startsWith("{SHA256}")) {
-            String hash = sha256Base64(input);
-            return stored.equals("{SHA256}" + hash);
+            return stored.equals("{SHA256}" + sha256Base64(input));
         }
         return stored.equals(input);
     }
 
-    private String sha256Base64(String input) {
+    public static String encodePassword(String raw) {
+        return "{SHA256}" + sha256Base64(raw);
+    }
+
+    private static String sha256Base64(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] digest = md.digest(input.getBytes(StandardCharsets.UTF_8));
@@ -52,6 +55,13 @@ public class AuthService {
         } catch (Exception e) {
             throw new RuntimeException("SHA-256 error", e);
         }
+    }
+
+    public void resetPassword(Long userId, String newPassword) {
+        SysUser user = userMapper.selectById(userId);
+        if (user == null) throw new BizException("用户不存在");
+        user.setPassword(encodePassword(newPassword));
+        userMapper.updateById(user);
     }
 
     public SysUser getUserById(Long id) { return userMapper.selectById(id); }
