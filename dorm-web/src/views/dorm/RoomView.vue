@@ -7,8 +7,7 @@
       <el-button type="primary" @click="showDialog()">新增寝室</el-button>
     </div>
     <el-table :data="list.records" border stripe v-loading="loading">
-      <el-table-column prop="id" label="ID" width="180" />
-      <el-table-column prop="roomNo" label="房间号" />
+      <el-table-column type="index" label="#" width="50" /><el-table-column prop="roomNo" label="房间号" />
       <el-table-column label="楼栋" width="120"><template #default="{ row }">{{ getBuildingName(row.buildingId) }}</template></el-table-column>
       <el-table-column prop="floor" label="楼层" width="80" />
       <el-table-column label="床位" width="160"><template #default="{ row }">{{ row.occupiedBeds }} / {{ row.totalBeds }}</template></el-table-column>
