@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div>
     <div class="toolbar"><h4>入住登记</h4></div>
     <el-form :model="form" :rules="rules" ref="formRef" label-width="100px" style="max-width:600px">
@@ -47,8 +47,8 @@ const getBedNo = (id) => { const b = allBeds.value.find(i => i.id === id); retur
 
 const fetchData = async () => {
   buildings.value = await getBuildings()
-  const userPage = await getUsers({ page: 1, size: 100 }); students.value = userPage.records.filter(u => u.role === 1)
-  checkins.value = await getCheckins()
+  const userPage = await getUsers({ page: 1, size: 100 }); students.value = userPage.records.filter(u => u.role === 1 && !ids.has(u.id))
+  checkins.value = await getCheckins(); const ids = new Set(checkins.value.map(c => c.studentId))
   const roomPage = await getRooms({ page: 1, size: 200 }); rooms.value = roomPage.records
   const bedList = []
   for (const r of rooms.value) {
