@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -117,4 +118,20 @@ public class RepairService {
         voPage.setRecords(voList);
         return voPage;
     }
+
+    public Map<String, Long> getRepairTypeStats() {
+        List<RepairRequest> all = requestMapper.selectList(null);
+        Map<String, Long> stats = new HashMap<>();
+        stats.put("水电", 0L);
+        stats.put("家具", 0L);
+        stats.put("门窗", 0L);
+        stats.put("网络", 0L);
+        stats.put("其他", 0L);
+        for (RepairRequest r : all) {
+            String type = r.getRepairType() != null ? r.getRepairType() : "其他";
+            stats.merge(type, 1L, Long::sum);
+        }
+        return stats;
+    }
+
 }

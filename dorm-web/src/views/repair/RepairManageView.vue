@@ -12,6 +12,14 @@
       </el-select>
     </div>
 
+    <!-- ?????? -->
+    <div class="stats-row">
+      <div class="stat-card" v-for="s in statList" :key="s.type" :style="{ borderLeftColor: s.color }">
+        <div class="stat-num" :style="{ color: s.color }">{{ s.count }}</div>
+        <div class="stat-label">{{ s.label }}</div>
+      </div>
+    </div>
+
     <el-table :data="list.records" border stripe v-loading="loading">
       <el-table-column prop="id" label="编号" width="170" />
       <el-table-column prop="studentName" label="学生" width="90" />
@@ -103,11 +111,20 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { getAllRepairs, processRepair, getProcessHistory } from '../../api/repair'
+import { getAllRepairs, processRepair, getProcessHistory, getRepairStats } from '../../api/repair'
 import { ElMessage } from 'element-plus'
 
 const list = ref({ records: [], total: 0 }); const loading = ref(false)
-const query = reactive({ page: 1, size: 10, status: null, repairType: null })
+
+const statList = [
+  { type: '水电', label: '水电', color: '#e6a23c' },
+  { type: '家具', label: '家具', color: '#909399' },
+  { type: '门窗', label: '门窗', color: '#909399' },
+  { type: '网络', label: '网络', color: '#67c23a' },
+  { type: '其他', label: '其他', color: '#909399' }
+].map(s => ({ ...s, count: stats.value[s.type] || 0 }))
+
+const stats = ref({}); const query = reactive({ page: 1, size: 10, status: null, repairType: null })
 const dialogVisible = ref(false); const historyVisible = ref(false)
 const processTarget = ref({}); const historyTarget = ref({}); const history = ref([])
 const formRef = ref()
@@ -117,6 +134,7 @@ const typeTag = (t) => ({ '水电': 'warning', '家具': '', '门窗': 'info', '
 
 const onActionChange = (val) => { form.status = (val === '维修完成' || val === '无法修复') ? 2 : 1 }
 
+const fetchStats = async () => { stats.value = await getRepairStats() }
 const fetchList = async () => {
   loading.value = true
   const params = { page: query.page, size: query.size }
@@ -127,6 +145,7 @@ const fetchList = async () => {
     list.value.records = list.value.records.filter(r => r.repairType === query.repairType)
   }
   loading.value = false
+  fetchStats()
 }
 
 const showProcess = (row) => {
@@ -155,4 +174,12 @@ onMounted(() => { fetchList() })
 .toolbar { margin-bottom: 16px; display: flex; gap: 8px; }
 .dialog-info p { margin: 4px 0; font-size: 14px; color: #606266; }
 .text-muted { color: #c0c4cc; font-size: 13px; }
+
+.stats-row { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+.stat-card { flex: 1; min-width: 120px; background: #fff; border-radius: 8px; padding: 16px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-left: 4px solid #409eff; text-align: center; transition: transform 0.2s; }
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+.stat-num { font-size: 28px; font-weight: 700; color: #409eff; }
+.stat-label { font-size: 13px; color: #909399; margin-top: 4px; }
+
 </style>

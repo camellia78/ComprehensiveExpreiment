@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -60,4 +61,10 @@ public class RepairController {
         repairService.cancelRepair(id, studentId);
         return R.ok();
     }
+
+    @GetMapping("/repairs/stats")
+    public R<Map<String, Long>> getStats() {
+        return R.ok(repairService.getRepairTypeStats());
+    }
+
 }

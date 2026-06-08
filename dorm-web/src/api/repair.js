@@ -5,3 +5,5 @@ export const getAllRepairs = (params) => request.get('/repairs/all', { params })
 export const getProcessHistory = (id) => request.get('/repairs/' + id + '/history')
 export const processRepair = (id, data) => request.put('/repairs/' + id + '/process', data)
 export const cancelRepair = (id) => request.put('/repairs/' + id + '/cancel')
+
+export const getRepairStats = () => request.get('/repairs/stats')
