@@ -155,7 +155,7 @@ const fetchList = async () => {
       const res = await getUsers(params)
       list.value = { records: res.records || [], total: Number(res.total) || 0 }
     } else {
-      params.size = 50
+      params.size = 500
       const res = await getUsers(params)
       const admins = (res.records || []).filter(u => u.role === 0 || u.role === 2)
       const start = (page.value - 1) * size.value
